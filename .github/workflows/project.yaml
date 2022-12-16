@@ -1,4 +1,4 @@
-name: Format
+name: Project workflow
 on:
   workflow_dispatch:
   push:
@@ -56,3 +56,48 @@ jobs:
 
       - name: go vet
         run: go vet ./...
+  test:
+    needs: vet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+          cache: true
+
+      - name: Test
+        run: go test -v ./...
+  race:
+    needs: vet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+          cache: true
+
+      - name: Coverage
+        run: go test -v -race ./...
+  coverage:
+    needs: vet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+          cache: true
+
+      - name: Coverage
+        run: go test -v -covermode=atomic -coverprofile=coverage.tx ./...
